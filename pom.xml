@@ -55,6 +55,20 @@
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>2.10.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>     <!--HATEOAS : 현재 리소스와 연관된 자원 상태 정보를 제공-->
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,5 +1,7 @@
 package com.example.restfulwebservice.user;
 
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -7,6 +9,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class UserController {
@@ -24,14 +29,19 @@ public class UserController {
 
     // Get /users/1 or /users/2 ==> id : String
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable("id") int id){
+    public Resource<User> retrieveUser(@PathVariable("id") int id){
         User user = service.findOne(id);    // ctrl + alt + v
 
         if(user == null){
             throw new UserNotFoundException(String.format("Id[%s] not found", id));
         }
 
-        return user;
+        // HATEOAS
+        Resource<User> resource = new Resource<>(user);
+        ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        resource.add(linkTo.withRel("all-users"));
+
+        return resource;
     }
 
     @PostMapping("/users")
