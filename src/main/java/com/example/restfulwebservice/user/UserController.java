@@ -1,8 +1,12 @@
 package com.example.restfulwebservice.user;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -29,7 +33,7 @@ public class UserController {
 
     // Get /users/1 or /users/2 ==> id : String
     @GetMapping("/users/{id}")
-    public Resource<User> retrieveUser(@PathVariable("id") int id){
+    public MappingJacksonValue retrieveUser(@PathVariable("id") int id){
         User user = service.findOne(id);    // ctrl + alt + v
 
         if(user == null){
@@ -41,7 +45,15 @@ public class UserController {
         ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
         resource.add(linkTo.withRel("all-users"));
 
-        return resource;
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
+                .filterOutAllExcept("id", "name", "joinDate", "password");
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);  // User에서 정의한 Filter
+
+        MappingJacksonValue mapping = new MappingJacksonValue(resource);
+        mapping.setFilters(filters);
+
+        return mapping;
     }
 
     @PostMapping("/users")
